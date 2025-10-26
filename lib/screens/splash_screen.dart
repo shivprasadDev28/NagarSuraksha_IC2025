@@ -70,7 +70,7 @@ class _SplashScreenState extends State<SplashScreen> {
             
             // App Name
             const Text(
-              'Delhi Urban Health Monitor',
+              'NagarSuraksha',
               style: TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
@@ -113,3 +113,4 @@ class _SplashScreenState extends State<SplashScreen> {
     );
   }
 }
+

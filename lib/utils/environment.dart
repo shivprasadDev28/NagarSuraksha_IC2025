@@ -8,7 +8,7 @@ class Environment {
   static const String supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImRjd3VjeXFicXhua3lrbmJ1dHh3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjE0MjYwNTcsImV4cCI6MjA3NzAwMjA1N30.nBYaZgb6-qsM1Not-cYqiDamhOfbcbzF0Jw50xXq_34';
   
   // App Configuration
-  static const String appName = 'Delhi Urban Health Monitor';
+  static const String appName = 'NagarSuraksha';
   static const String appVersion = '1.0.0';
   
   // Cache Configuration

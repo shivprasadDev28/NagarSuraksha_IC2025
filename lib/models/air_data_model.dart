@@ -67,3 +67,4 @@ class AirData {
     return '#7E0023';
   }
 }
+

@@ -5,8 +5,11 @@ import 'package:provider/provider.dart';
 import 'providers/auth_provider.dart';
 import 'providers/air_data_provider.dart';
 import 'providers/issue_provider.dart';
+import 'providers/analytics_provider.dart';
+import 'providers/notification_provider.dart';
 import 'screens/splash_screen.dart';
 import 'services/supabase_service.dart';
+import 'services/notification_service.dart';
 import 'utils/environment.dart';
 
 void main() async {
@@ -17,6 +20,9 @@ void main() async {
   
   // Initialize Supabase
   await SupabaseService.initialize();
+  
+  // Initialize Notification Service
+  await NotificationService.initialize();
   
   runApp(const DUHMApp());
 }
@@ -31,6 +37,8 @@ class DUHMApp extends StatelessWidget {
         ChangeNotifierProvider(create: (_) => AuthProvider()),
         ChangeNotifierProvider(create: (_) => AirDataProvider()),
         ChangeNotifierProvider(create: (_) => IssueProvider()),
+        ChangeNotifierProvider(create: (_) => AnalyticsProvider()),
+        ChangeNotifierProvider(create: (_) => NotificationProvider()),
       ],
       child: MaterialApp(
         title: Environment.appName,

@@ -1,5 +1,16 @@
 enum IssueType { water, urban }
 
+extension IssueTypeExtension on IssueType {
+  String get typeDisplayName {
+    switch (this) {
+      case IssueType.water:
+        return 'Water Issue';
+      case IssueType.urban:
+        return 'Urban Issue';
+    }
+  }
+}
+
 class Issue {
   final String issueId;
   final String userId;
@@ -72,3 +83,4 @@ class Issue {
     }
   }
 }
+

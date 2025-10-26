@@ -79,7 +79,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
               children: [
                 // Title
                 const Text(
-                  'Join Delhi Urban Health Monitor',
+                  'Join NagarSuraksha',
                   style: TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
@@ -91,7 +91,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
                 const SizedBox(height: 8),
                 
                 const Text(
-                  'Help us monitor Delhi\'s air quality and urban issues',
+                  'Help us monitor air quality and urban issues',
                   style: TextStyle(
                     fontSize: 16,
                     color: Color(0xFF718096),

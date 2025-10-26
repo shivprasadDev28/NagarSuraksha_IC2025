@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../models/air_data_model.dart';
+import '../../providers/air_data_provider.dart';
+import 'package:provider/provider.dart';
 
 class AirQualityCard extends StatelessWidget {
   final AirData? airData;
@@ -56,13 +58,39 @@ class AirQualityCard extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text(
-                  'Current Air Quality',
-                  style: TextStyle(
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                    color: Color(0xFF2D3748),
-                  ),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text(
+                      'Current Air Quality',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: Color(0xFF2D3748),
+                      ),
+                    ),
+                    Consumer<AirDataProvider>(
+                      builder: (context, airDataProvider, child) {
+                        if (airDataProvider.currentLatitude != null && 
+                            airDataProvider.currentLongitude != null) {
+                          return Text(
+                            'At your location',
+                            style: TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey[600],
+                            ),
+                          );
+                        }
+                        return Text(
+                          'Delhi, India',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: Colors.grey[600],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),

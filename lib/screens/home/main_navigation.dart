@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_screen.dart';
-import '../map_screen.dart';
+import '../enhanced_map_screen.dart';
 import '../analytics_screen.dart';
 import '../settings_screen.dart';
 
@@ -16,7 +16,7 @@ class _MainNavigationState extends State<MainNavigation> {
 
   final List<Widget> _screens = [
     const HomeScreen(),
-    const MapScreen(),
+    const EnhancedMapScreen(),
     const AnalyticsScreen(),
     const SettingsScreen(),
   ];

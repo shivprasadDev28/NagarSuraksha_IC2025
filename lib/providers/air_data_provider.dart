@@ -2,32 +2,57 @@ import 'package:flutter/material.dart';
 import '../models/air_data_model.dart';
 import '../services/waqi_service.dart';
 import '../services/firestore_service.dart';
+import '../services/location_service.dart';
 
 class AirDataProvider extends ChangeNotifier {
   AirData? _currentAirData;
   List<AirData> _historicalData = [];
+  List<AirData> _indianCitiesData = [];
   int? _predictedAQI;
   bool _isLoading = false;
   String? _errorMessage;
+  double? _currentLatitude;
+  double? _currentLongitude;
 
   AirData? get currentAirData => _currentAirData;
   List<AirData> get historicalData => _historicalData;
+  List<AirData> get indianCitiesData => _indianCitiesData;
   int? get predictedAQI => _predictedAQI;
   bool get isLoading => _isLoading;
   String? get errorMessage => _errorMessage;
+  double? get currentLatitude => _currentLatitude;
+  double? get currentLongitude => _currentLongitude;
 
   AirDataProvider() {
     _loadHistoricalData();
+    _fetchCurrentLocationAndData();
   }
 
-  Future<void> fetchCurrentAirData(double latitude, double longitude) async {
+  Future<void> _fetchCurrentLocationAndData() async {
+    try {
+      final position = await LocationService.getCurrentPosition();
+      if (position != null) {
+        _currentLatitude = position.latitude;
+        _currentLongitude = position.longitude;
+        await fetchCurrentLocationAirData(position.latitude, position.longitude);
+      }
+    } catch (e) {
+      print('Failed to get current location: $e');
+      // Fallback to Delhi if location fails
+      await fetchDelhiAirData();
+    }
+  }
+
+  Future<void> fetchCurrentLocationAirData(double latitude, double longitude) async {
     _setLoading(true);
     _clearError();
 
     try {
-      AirData? airData = await WAQIService.fetchAirQualityData(latitude, longitude);
+      AirData? airData = await WAQIService.fetchCurrentLocationAirQuality(latitude, longitude);
       if (airData != null) {
         _currentAirData = airData;
+        _currentLatitude = latitude;
+        _currentLongitude = longitude;
         
         // Save to Firestore
         await FirestoreService.saveAirData(airData);
@@ -38,6 +63,20 @@ class AirDataProvider extends ChangeNotifier {
         // Calculate prediction
         await _calculatePrediction();
       }
+    } catch (e) {
+      _errorMessage = e.toString();
+    } finally {
+      _setLoading(false);
+    }
+  }
+
+  Future<void> fetchIndianCitiesAirData() async {
+    _setLoading(true);
+    _clearError();
+
+    try {
+      _indianCitiesData = await WAQIService.fetchIndianCitiesAirQuality();
+      notifyListeners();
     } catch (e) {
       _errorMessage = e.toString();
     } finally {
@@ -121,3 +160,4 @@ class AirDataProvider extends ChangeNotifier {
     notifyListeners();
   }
 }
+

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../providers/auth_provider.dart';
+import '../providers/notification_provider.dart';
+import 'splash_screen.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
@@ -78,13 +80,40 @@ class SettingsScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 16),
-                  SwitchListTile(
-                    title: const Text('Notifications'),
-                    subtitle: const Text('Receive updates about air quality'),
-                    value: true,
-                    onChanged: (value) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Notifications setting updated')),
+                  Consumer<NotificationProvider>(
+                    builder: (context, notificationProvider, child) {
+                      return SwitchListTile(
+                        title: const Text('Pollution Alerts'),
+                        subtitle: Text(
+                          notificationProvider.isMonitoring 
+                            ? 'Monitoring active - ${notificationProvider.pollutionZonesCount} high pollution zones'
+                            : 'Get alerts when near high pollution areas',
+                        ),
+                        value: notificationProvider.isMonitoring,
+                        onChanged: (value) async {
+                          if (value) {
+                            await notificationProvider.startMonitoring(context);
+                          } else {
+                            await notificationProvider.stopMonitoring();
+                          }
+                        },
+                      );
+                    },
+                  ),
+                  const Divider(),
+                  Consumer<NotificationProvider>(
+                    builder: (context, notificationProvider, child) {
+                      return ListTile(
+                        leading: const Icon(Icons.notifications_active),
+                        title: const Text('Test Notification'),
+                        subtitle: const Text('Send a test notification'),
+                        trailing: const Icon(Icons.arrow_forward_ios),
+                        onTap: () async {
+                          await notificationProvider.sendTestNotification();
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            const SnackBar(content: Text('Test notification sent!')),
+                          );
+                        },
                       );
                     },
                   ),
@@ -129,7 +158,7 @@ class SettingsScreen extends StatelessWidget {
                     subtitle: const Text('1.0.0'),
                     onTap: () {
                       ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('Delhi Urban Health Monitor v1.0.0')),
+                        const SnackBar(content: Text('NagarSuraksha v1.0.0')),
                       );
                     },
                   ),
@@ -171,8 +200,8 @@ class SettingsScreen extends StatelessWidget {
                   onPressed: authProvider.isLoading ? null : () async {
                     await authProvider.signOut();
                     if (context.mounted) {
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        '/login',
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => const SplashScreen()),
                         (route) => false,
                       );
                     }
@@ -199,3 +228,4 @@ class SettingsScreen extends StatelessWidget {
     );
   }
 }
+

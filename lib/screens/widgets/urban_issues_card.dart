@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../../models/issue_model.dart';
+import '../issue_submission_screen.dart';
 
 class UrbanIssuesCard extends StatelessWidget {
   final List<Issue> issues;
@@ -90,9 +91,12 @@ class UrbanIssuesCard extends StatelessWidget {
                 Center(
                   child: TextButton(
                     onPressed: () {
-                      // TODO: Navigate to all urban issues
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text('View all urban issues - Coming Soon')),
+                      Navigator.of(context).push(
+                        MaterialPageRoute(
+                          builder: (context) => const IssueSubmissionScreen(
+                            issueType: IssueType.urban,
+                          ),
+                        ),
                       );
                     },
                     child: Text(

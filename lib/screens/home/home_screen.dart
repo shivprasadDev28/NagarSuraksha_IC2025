@@ -3,9 +3,11 @@ import 'package:provider/provider.dart';
 import '../../providers/air_data_provider.dart';
 import '../../providers/issue_provider.dart';
 import '../../providers/auth_provider.dart';
+import '../../models/issue_model.dart';
 import '../widgets/air_quality_card.dart';
 import '../widgets/water_issues_card.dart';
 import '../widgets/urban_issues_card.dart';
+import '../issue_submission_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -24,10 +26,11 @@ class _HomeScreenState extends State<HomeScreen> {
   Future<void> _loadData() async {
     final airDataProvider = Provider.of<AirDataProvider>(context, listen: false);
     final issueProvider = Provider.of<IssueProvider>(context, listen: false);
-    
-    // Load Delhi air quality data
-    await airDataProvider.fetchDelhiAirData();
-    
+
+    // Load current location air quality data (already loaded in provider constructor)
+    // Also load Indian cities data for map
+    await airDataProvider.fetchIndianCitiesAirData();
+
     // Load issues
     issueProvider.refreshIssues();
   }
@@ -37,7 +40,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: const Color(0xFFF9FAFB),
       appBar: AppBar(
-        title: const Text('Delhi Urban Health Monitor'),
+        title: const Text('NagarSuraksha'),
         backgroundColor: const Color(0xFF3CB371),
         foregroundColor: Colors.white,
         elevation: 0,
@@ -180,9 +183,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        // TODO: Navigate to report water issue
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Report Water Issue - Coming Soon')),
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const IssueSubmissionScreen(
+                              issueType: IssueType.water,
+                            ),
+                          ),
                         );
                       },
                       icon: const Icon(Icons.water_drop),
@@ -197,9 +203,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   Expanded(
                     child: ElevatedButton.icon(
                       onPressed: () {
-                        // TODO: Navigate to report urban issue
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(content: Text('Report Urban Issue - Coming Soon')),
+                        Navigator.of(context).push(
+                          MaterialPageRoute(
+                            builder: (context) => const IssueSubmissionScreen(
+                              issueType: IssueType.urban,
+                            ),
+                          ),
                         );
                       },
                       icon: const Icon(Icons.construction),
@@ -211,6 +220,169 @@ class _HomeScreenState extends State<HomeScreen> {
                     ),
                   ),
                 ],
+              ),
+              
+              const SizedBox(height: 24),
+              
+              // Recent Issues Section
+              const Text(
+                'Recent Issues',
+                style: TextStyle(
+                  fontSize: 18,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF2D3748),
+                ),
+              ),
+              const SizedBox(height: 12),
+              Consumer<IssueProvider>(
+                builder: (context, issueProvider, child) {
+                  if (issueProvider.isLoading) {
+                    return const Card(
+                      child: Padding(
+                        padding: EdgeInsets.all(16),
+                        child: Center(child: CircularProgressIndicator()),
+                      ),
+                    );
+                  }
+                  
+                  final recentIssues = issueProvider.allIssues.take(5).toList();
+                  
+                  if (recentIssues.isEmpty) {
+                    return Card(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Column(
+                          children: [
+                            Icon(
+                              Icons.report_problem_outlined,
+                              size: 48,
+                              color: Colors.grey[400],
+                            ),
+                            const SizedBox(height: 8),
+                            Text(
+                              'No issues reported yet',
+                              style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey[600],
+                              ),
+                            ),
+                            const SizedBox(height: 4),
+                            Text(
+                              'Be the first to report an issue in your area',
+                              style: TextStyle(
+                                fontSize: 14,
+                                color: Colors.grey[500],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    );
+                  }
+                  
+                  return Card(
+                    child: Padding(
+                      padding: const EdgeInsets.all(16),
+                      child: Column(
+                        children: recentIssues.map((issue) {
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: issue.type == IssueType.water 
+                                  ? Colors.blue.withOpacity(0.1)
+                                  : Colors.orange.withOpacity(0.1),
+                              borderRadius: BorderRadius.circular(8),
+                              border: Border.all(
+                                color: issue.type == IssueType.water 
+                                    ? Colors.blue.withOpacity(0.3)
+                                    : Colors.orange.withOpacity(0.3),
+                              ),
+                            ),
+                            child: Row(
+                              children: [
+                                Container(
+                                  width: 40,
+                                  height: 40,
+                                  decoration: BoxDecoration(
+                                    color: issue.type == IssueType.water 
+                                        ? Colors.blue
+                                        : Colors.orange,
+                                    shape: BoxShape.circle,
+                                  ),
+                                  child: Icon(
+                                    issue.type == IssueType.water 
+                                        ? Icons.water_drop 
+                                        : Icons.construction,
+                                    color: Colors.white,
+                                    size: 20,
+                                  ),
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        issue.typeDisplayName,
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 14,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 2),
+                                      Text(
+                                        issue.description,
+                                        style: const TextStyle(fontSize: 12),
+                                        maxLines: 2,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Row(
+                                        children: [
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 6,
+                                              vertical: 2,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: issue.status == 'resolved' 
+                                                  ? Colors.green
+                                                  : issue.status == 'verified'
+                                                      ? Colors.blue
+                                                      : Colors.orange,
+                                              borderRadius: BorderRadius.circular(4),
+                                            ),
+                                            child: Text(
+                                              issue.status.toUpperCase(),
+                                              style: const TextStyle(
+                                                color: Colors.white,
+                                                fontSize: 10,
+                                                fontWeight: FontWeight.bold,
+                                              ),
+                                            ),
+                                          ),
+                                          const Spacer(),
+                                          Text(
+                                            '${issue.timestamp.day}/${issue.timestamp.month}',
+                                            style: TextStyle(
+                                              fontSize: 10,
+                                              color: Colors.grey[600],
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                    ),
+                  );
+                },
               ),
               
               const SizedBox(height: 20),

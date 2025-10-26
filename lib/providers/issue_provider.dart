@@ -113,3 +113,4 @@ class IssueProvider extends ChangeNotifier {
     _loadIssues();
   }
 }
+
