@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "432273720147",
+    "project_id": "ic25-8c912",
+    "storage_bucket": "ic25-8c912.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:432273720147:android:858f9aa922f10fb0b757a6",
+        "android_client_info": {
+          "package_name": "com.duhm.app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCfM-FO19wL-6vnsIxCNgG7grc37P7xvSw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
