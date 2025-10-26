@@ -85,7 +85,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         ),
                         const SizedBox(height: 8),
                         const Text(
-                          'Monitor Delhi\'s air quality and report urban issues',
+                          'Monitor air quality and report urban issues',
                           style: TextStyle(
                             fontSize: 14,
                             color: Colors.white70,
